@@ -20,14 +20,19 @@ reporting-disabled = false
   hostname = "{{ influxdb_hostname }}"
   bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_raft_port }}"
   retention-autocreate = true
-{% if influxdb_peers is defined and (influxdb_peers|length) > 1 %}
-  # Each host:port entry must be quoted
-  peers = {{ influxdb_peers }}
-{% endif %}
+  http-bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_meta_http_port }}"
+  https-enabled = false
+  https-certificate = ""
+  retention-autocreate = true
   election-timeout = "1s"
   heartbeat-timeout = "1s"
   leader-lease-timeout = "500ms"
   commit-timeout = "50ms"
+  cluster-tracing = false
+  raft-promotion-enabled = true
+  logging-enabled = true
+  pprof-enabled = false
+  lease-duration = "1m0s"
 
 ###
 ### [data]
@@ -40,7 +45,23 @@ reporting-disabled = false
 {% if influxdb_version is defined and influxdb_version >= "0.9.3" %}
   wal-dir = "/var/opt/influxdb/wal"
 {% endif %}
-
+  engine = "tsm1"
+  max-wal-size = 104857600
+  wal-flush-interval = "10m0s"
+  wal-partition-flush-delay = "2s"
+  wal-logging-enabled = true
+  wal-ready-series-size = 30720
+  wal-compaction-threshold = 0.5
+  wal-max-series-size = 1048576
+  wal-flush-cold-interval = "5s"
+  wal-partition-size-threshold = 52428800
+  query-log-enabled = true
+  cache-max-memory-size = 524288000
+  cache-snapshot-memory-size = 26214400
+  cache-snapshot-write-cold-duration = "1h0m0s"
+  compact-full-write-cold-duration = "24h0m0s"
+  max-points-per-block = 0
+  data-logging-enabled = true
 
 ###
 ### [cluster]
@@ -51,6 +72,14 @@ reporting-disabled = false
 
 [cluster]
   shard-writer-timeout = "5s"
+
+[subscriber]
+  enabled = true
+
+[shard-precreation]
+  enabled = true
+  check-interval = "10m0s"
+  advance-period = "30m0s"
 
 ###
 ### [retention]
@@ -88,20 +117,6 @@ reporting-disabled = false
   pprof-enabled = false
 
 ###
-### [[graphite]]
-###
-### Controls one or many listeners for Graphite data.
-###
-
-[[graphite]]
-  enabled = false
-  # bind-address = "{{ influxdb_bind_address | default('') }}:2003"
-  # protocol = "tcp"
-  # consistency-level = "one"
-  # name-separator = "."
-  # name-position = "last"
-
-###
 ### [collectd]
 ###
 ### Controls the listener for collectd data.
@@ -126,27 +141,10 @@ reporting-disabled = false
   # retention-policy = ""
 
 ###
-### [udp]
-###
-### Controls the listener for InfluxDB line protocol data via UDP.
+### [monitor]
 ###
 
-{% if influxdb_version is defined and influxdb_version >= "0.9.3" %}
-[[udp]]
-{% else %}
-[udp]
-{% endif %}
-  enabled = false
-  # bind-address = ""
-  # database = ""
-  # batch-size = 0
-  # batch-timeout = "0"
-
-###
-### [monitoring]
-###
-
-[monitoring]
+[monitor]
   enabled = true
   write-interval = "24h"
 
