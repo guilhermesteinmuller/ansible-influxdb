@@ -23,7 +23,6 @@ reporting-disabled = false
   http-bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_meta_http_port }}"
   https-enabled = false
   https-certificate = ""
-  retention-autocreate = true
   election-timeout = "1s"
   heartbeat-timeout = "1s"
   leader-lease-timeout = "500ms"
@@ -42,9 +41,7 @@ reporting-disabled = false
 
 [data]
   dir = "/var/opt/influxdb/data"
-{% if influxdb_version is defined and influxdb_version >= "0.9.3" %}
   wal-dir = "/var/opt/influxdb/wal"
-{% endif %}
   engine = "tsm1"
   max-wal-size = 104857600
   wal-flush-interval = "10m0s"
