@@ -1,6 +1,6 @@
 ---
 - name: Update config
-  template: src=influxdb.conf.j2 dest=/etc/opt/influxdb/influxdb.conf
+  template: src=influxdb.conf.j2 dest={{ influxdb_conf_dir }}/influxdb.conf
   when: influxdb_version|version_compare('0.9', '>=')
   notify:
     - restart influxdb
