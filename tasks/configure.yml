@@ -17,6 +17,14 @@
   notify:
     - restart influxdb
 
+- name: Create influxdb dir
+  file:
+    state: directory
+    path: "{{ influxdb_dir }}"
+    owner: influxdb
+    group: root
+    mode: 0775
+
 - name: Detect if this is a systemd based system
   command: cat /proc/1/comm
   register: init

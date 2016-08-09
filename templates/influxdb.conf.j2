@@ -16,7 +16,7 @@ reporting-disabled = false
 ###
 
 [meta]
-  dir = "/var/opt/influxdb/meta"
+  dir = "{{ influxdb_dir }}//meta"
   hostname = "{{ influxdb_hostname }}"
   bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_raft_port }}"
   retention-autocreate = true
@@ -40,8 +40,8 @@ reporting-disabled = false
 ###
 
 [data]
-  dir = "/var/opt/influxdb/data"
-  wal-dir = "/var/opt/influxdb/wal"
+  dir = "{{ influxdb_dir }}/data"
+  wal-dir = "{{ influxdb_dir }}/wal"
   engine = "tsm1"
   max-wal-size = 104857600
   wal-flush-interval = "10m0s"
@@ -168,7 +168,7 @@ reporting-disabled = false
 
 [hinted-handoff]
   enabled = true
-  dir = "/var/opt/influxdb/hh"
+  dir = "{{ influxdb_dir }}/hh"
   max-size = 1073741824
   max-age = "168h"
   retry-rate-limit = 0
