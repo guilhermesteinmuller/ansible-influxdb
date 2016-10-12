@@ -1,22 +1,18 @@
-- name: apt install influxdb
-  apt: name=influxdb
-  when: influxdb_use_apt
-
-- name: Create download directory
-  file: path="{{ download_tmp_dir }}" state=directory recurse=yes
-  when: not influxdb_use_apt
-
-- name: Fetch package
-  get_url: url={{influxdb_deb_src_url}}/influxdb_{{ influxdb_version }}_amd64.deb
-           dest={{ download_tmp_dir }}/influxdb_{{ influxdb_version }}_amd64.deb
-  register: get_url_result
-  until: get_url_result.state == 'file'
+---
+- name: Download InfluxDB
+  get_url:
+    url: "{{ influxdb_mirror }}/influxdb_{{ influxdb_version }}_amd64.deb"
+    dest: "/root/{{ influxdb_version }}.deb"
+    mode: 0600
+  register: download_influxdb_deb
+  until: download_influxdb_deb | success
   retries: 5
-  delay: 1
-  when: not influxdb_use_apt
+  delay: 5
 
-- name: Install package
-  command: dpkg --skip-same-version -i {{ download_tmp_dir }}/influxdb_{{ influxdb_version }}_amd64.deb
-  register: dpkg_result
-  changed_when: "dpkg_result.stdout.startswith('Selecting')"
-  when: not influxdb_use_apt
+- name: Install InfluxDB
+  apt:
+    deb: "/root/{{ influxdb_version }}.deb"
+  register: install_influxdb
+  until: install_influxdb | success
+  retries: 3
+  delay: 2

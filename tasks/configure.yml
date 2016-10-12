@@ -1,19 +1,16 @@
 ---
 - name: Update config
-  template: src=influxdb.conf.j2 dest={{ influxdb_conf_dir }}/influxdb.conf
-  when: influxdb_version|version_compare('0.9', '>=')
+  template:
+    src: influxdb.conf.j2
+    dest: "{{ influxdb_conf_dir }}/influxdb.conf"
+  register: influxdb_config
   notify:
     - restart influxdb
 
 - name: Prepare custom influxdb config
-  template: src=etc_default_influxdb.j2 dest=/etc/default/influxdb
-  when: influxdb_version|version_compare('0.9', '>=')
-  notify:
-    - restart influxdb
-
-- name: Copy ssl key
-  copy: dest={{influxdb_ssl_certificate}} src={{influxdb_ssl_certificate_src}} owner=influxdb group=root mode=0440
-  when: influxdb_ssl_certificate_src is defined
+  template:
+    src: etc_default_influxdb.j2
+    dest: /etc/default/influxdb
   notify:
     - restart influxdb
 
@@ -25,15 +22,9 @@
     group: root
     mode: 0775
 
-- name: Detect if this is a systemd based system
-  command: cat /proc/1/comm
-  register: init
-- set_fact: use_systemd=True
-  when: init.stdout == 'systemd'
-- set_fact: use_systemd=False
-  when: init.stdout != 'systemd'
-
-- command: systemctl daemon-reload
-  when: use_systemd
-
 - meta: flush_handlers
+
+- name: Sleep for 60 seconds to let Influxdb elect a leader
+  pause:
+    minutes: 1
+  when: influxdb_config | changed
