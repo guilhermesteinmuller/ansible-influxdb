@@ -61,13 +61,13 @@ reporting-disabled = false
   data-logging-enabled = true
 
 ###
-### [cluster]
+### [coordinator]
 ###
 ### Controls non-Raft cluster behavior, which generally includes how data is
 ### shared across shards.
 ###
 
-[cluster]
+[coordinator]
   shard-writer-timeout = "5s"
 
 [subscriber]
@@ -114,24 +114,24 @@ reporting-disabled = false
   pprof-enabled = false
 
 ###
-### [collectd]
+### [[collectd]]
 ###
 ### Controls the listener for collectd data.
 ###
 
-[collectd]
+[[collectd]]
   enabled = false
   # bind-address = ""
   # database = ""
   # typesdb = ""
 
 ###
-### [opentsdb]
+### [[opentsdb]]
 ###
 ### Controls the listener for OpenTSDB data.
 ###
 
-[opentsdb]
+[[opentsdb]]
   enabled = false
   # bind-address = ""
   # database = ""

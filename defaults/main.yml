@@ -7,7 +7,7 @@ influxdb_hostname: "{{ ansible_default_ipv4.address }}"
 
 influxdb_conf_dir: "/etc/influxdb"
 
-influxdb_version: "0.12.2-1"
+influxdb_version: "1.1.0"
 influxdb_listen_address: "{{ ansible_default_ipv4.address }}"
 
 influxdb_log_dir: /var/log/influxdb
