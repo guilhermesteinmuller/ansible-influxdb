@@ -1,109 +1,53 @@
-### Welcome to the InfluxDB configuration file.
-
-# Once every 24 hours InfluxDB will report anonymous data to m.influxdb.com
-# The data includes raft id (random 8 bytes), os, arch, version, and metadata.
-# We don't track ip addresses of servers reporting. This is only used
-# to track the number of instances running and the versions, which
-# is very helpful for us.
-# Change this option to true to disable reporting.
+# {{ ansible_managed }}
 reporting-disabled = false
 
-###
-### [meta]
-###
-### Controls the parameters for the Raft consensus group that stores metadata
-### about the InfluxDB cluster.
-###
+[logging]
+  level = "info"
 
 [meta]
   dir = "{{ influxdb_dir }}/meta"
   hostname = "{{ influxdb_hostname }}"
   bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_raft_port }}"
-  retention-autocreate = true
   http-bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_meta_http_port }}"
-  https-enabled = false
-  https-certificate = ""
+  retention-autocreate = true
   election-timeout = "1s"
   heartbeat-timeout = "1s"
   leader-lease-timeout = "500ms"
   commit-timeout = "50ms"
   cluster-tracing = false
   raft-promotion-enabled = true
-  logging-enabled = true
-  pprof-enabled = false
-  lease-duration = "1m0s"
-
-###
-### [data]
-###
-### Controls where the actual shard data for InfluxDB lives.
-###
 
 [data]
   dir = "{{ influxdb_dir }}/data"
+  max-wal-size = 104857600 # Maximum size the WAL can reach before a flush. Defaults to 100MB.
+  wal-flush-interval = "10m" # Maximum time data can sit in WAL before a flush.
+  wal-partition-flush-delay = "2s" # The delay time between each WAL partition being flushed.
   wal-dir = "{{ influxdb_dir }}/wal"
-  engine = "tsm1"
-  max-wal-size = 104857600
-  wal-flush-interval = "10m0s"
-  wal-partition-flush-delay = "2s"
-  wal-logging-enabled = true
-  wal-ready-series-size = 30720
-  wal-compaction-threshold = 0.5
-  wal-max-series-size = 1048576
-  wal-flush-cold-interval = "5s"
-  wal-partition-size-threshold = 52428800
-  query-log-enabled = true
-  cache-max-memory-size = 524288000
-  cache-snapshot-memory-size = 26214400
-  cache-snapshot-write-cold-duration = "1h0m0s"
-  compact-full-write-cold-duration = "24h0m0s"
-  max-points-per-block = 0
-  data-logging-enabled = true
-
-###
-### [coordinator]
-###
-### Controls non-Raft cluster behavior, which generally includes how data is
-### shared across shards.
-###
+  wal-enable-logging = true
 
 [coordinator]
-  shard-writer-timeout = "5s"
-
-[subscriber]
-  enabled = true
-
-[shard-precreation]
-  enabled = true
-  check-interval = "10m0s"
-  advance-period = "30m0s"
-
-###
-### [retention]
-###
-### Controls the enforcement of retention policies for evicting old data.
-###
+  shard-writer-timeout = "10s" # The time within which a shard must respond to write.
+  write-timeout = "5s" # The time within which a write operation must complete on the cluster.
 
 [retention]
   enabled = true
-  check-interval = "10m"
+  check-interval = "30m"
 
-###
-### [admin]
-###
-### Controls the availability of the built-in, web-based admin interface.
-###
+[shard-precreation]
+  enabled = true
+  check-interval = "10m"
+  advance-period = "30m"
+
+[monitor]
+  store-enabled = true # Whether to record statistics internally.
+  store-database = "_internal" # The destination database for recorded statistics
+  store-interval = "15s" # The interval at which to record statistics
 
 [admin]
   enabled = true
-  bind-address = "{{ influxdb_bind_address | default('') }}:8083"
-
-###
-### [http]
-###
-### Controls how the HTTP endpoints are configured. These are the primary
-### mechanism for getting data into and out of InfluxDB.
-###
+  bind-address = "{{ influxdb_bind_address | default('') }}:{{ influxdb_admin_port }}"
+  https-enabled = false
+  https-certificate = "/etc/ssl/influxdb.pem"
 
 [http]
   enabled = true
@@ -112,64 +56,25 @@ reporting-disabled = false
   log-enabled = true
   write-tracing = false
   pprof-enabled = false
+  https-enabled = false
+  https-certificate = "/etc/ssl/influxdb.pem"
 
-###
-### [[collectd]]
-###
-### Controls the listener for collectd data.
-###
+[[graphite]]
+  enabled = false
 
 [[collectd]]
   enabled = false
-  # bind-address = ""
-  # database = ""
-  # typesdb = ""
-
-###
-### [[opentsdb]]
-###
-### Controls the listener for OpenTSDB data.
-###
 
 [[opentsdb]]
   enabled = false
-  # bind-address = ""
-  # database = ""
-  # retention-policy = ""
 
-###
-### [monitor]
-###
-
-[monitor]
-  enabled = true
-  write-interval = "24h"
-
-###
-### [continuous_queries]
-###
-### Controls how continuous queries are run within InfluxDB.
-###
+[[udp]]
+  enabled = false
 
 [continuous_queries]
+  log-enabled = true
   enabled = true
   recompute-previous-n = 2
   recompute-no-older-than = "10m"
   compute-runs-per-interval = 10
   compute-no-more-than = "2m"
-
-###
-### [hinted-handoff]
-###
-### Controls the hinted handoff feature, which allows nodes to temporarily
-### store queued data when one node of a cluster is down for a short period
-### of time.
-###
-
-[hinted-handoff]
-  enabled = true
-  dir = "{{ influxdb_dir }}/hh"
-  max-size = 1073741824
-  max-age = "168h"
-  retry-rate-limit = 0
-  retry-interval = "1s"

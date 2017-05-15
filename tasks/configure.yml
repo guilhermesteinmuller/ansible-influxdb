@@ -1,18 +1,10 @@
 ---
-- name: Update config
+- name: Drop InfluxDB config
   template:
     src: influxdb.conf.j2
     dest: "{{ influxdb_conf_dir }}/influxdb.conf"
-  register: influxdb_config
   notify:
-    - restart influxdb
-
-- name: Prepare custom influxdb config
-  template:
-    src: etc_default_influxdb.j2
-    dest: /etc/default/influxdb
-  notify:
-    - restart influxdb
+    - Restart influxdb
 
 - name: Create influxdb dir
   file:
@@ -23,8 +15,3 @@
     mode: 0775
 
 - meta: flush_handlers
-
-- name: Sleep for 60 seconds to let Influxdb elect a leader
-  pause:
-    minutes: 1
-  when: influxdb_config | changed

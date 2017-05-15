@@ -1,4 +1,6 @@
 ---
 - include: install.yml
 - include: configure.yml
-- include: start.yml
+- include: check.yml
+- include: install_relay.yml
+- include: check_relay.yml

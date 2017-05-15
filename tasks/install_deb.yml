@@ -1,0 +1,19 @@
+---
+- name: Download InfluxDB (deb)
+  get_url:
+    url: "{{ influxdb_mirror }}/influxdb_{{ influxdb_version }}_amd64.deb"
+    dest: "/opt/influxdb_{{ influxdb_version }}.deb"
+    mode: 0600
+  register: download_influxdb_deb
+  until: download_influxdb_deb | success
+  retries: 5
+  delay: 5
+
+- name: Install InfluxDB (apt)
+  apt:
+    deb: "/root/influxdb_{{ influxdb_version }}.deb"
+  register: install_influxdb
+  until: install_influxdb | success
+  when: download_influxdb_deb.changed
+  retries: 3
+  delay: 2

@@ -1,0 +1,18 @@
+---
+- name: Download InfluxDB (rpm)
+  get_url:
+    url: "{{ influxdb_mirror }}/influxdb-{{ influxdb_version }}.x86_64.rpm"
+    dest: "/opt/influxdb-{{ influxdb_version }}.x86_64.rpm"
+  register: downoad_influxdb_rpm
+  until: downoad_influxdb_rpm | success
+  retries: 5
+  delay: 2
+
+- name: Install InfluxDB (yum)
+  yum:
+    name: "/opt/influxdb-{{ influxdb_version }}.x86_64.rpm"
+    state: present
+  register: install_influxdb
+  until: install_influxdb | success
+  retries: 3
+  delay: 2
