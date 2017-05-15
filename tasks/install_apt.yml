@@ -11,7 +11,7 @@
 
 - name: Install InfluxDB (apt)
   apt:
-    deb: "/root/influxdb_{{ influxdb_version }}.deb"
+    deb: "/opt/influxdb_{{ influxdb_version }}.deb"
   register: install_influxdb
   until: install_influxdb | success
   retries: 3
