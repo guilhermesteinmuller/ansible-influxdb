@@ -1,0 +1,25 @@
+---
+- name: Install git
+  package:
+    name: "git"
+    state: "latest"
+
+- name: Install GOLang
+  script: deploy_go.sh
+
+- name: Download and install influx-relay
+  script: deploy_influxdbrelay.sh
+
+- name: Drop influx relay toml file
+  template:
+    src: relay.toml.j2
+    dest: /opt/influxdb-relay/relay.toml
+  notify:
+    - Restart influxdb-relay
+
+- name: Drop Influx Relay service file
+  template:
+    src: influxdbrelay.service.j2
+    dest: /etc/systemd/system/influxdbrelay.service
+  notify:
+    - Restart influxdb-relay
