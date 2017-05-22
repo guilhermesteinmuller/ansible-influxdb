@@ -1,5 +1,7 @@
+# {{ ansible_managed }}
+
 [[http]]
-name = "example-http"
+name = "influx-http"
 bind-addr = '0.0.0.0:{{ influxdb_relay_port  }}'
 output = [
 {% set i =1%}
