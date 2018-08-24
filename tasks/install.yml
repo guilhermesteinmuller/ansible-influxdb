@@ -4,3 +4,6 @@
 
 - include: install_rpm.yml
   when: "ansible_os_family == 'RedHat'"
+
+- include: install_zypper.yml
+  when: "ansible_os_family == 'Suse'"
