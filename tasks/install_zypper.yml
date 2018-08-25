@@ -10,9 +10,9 @@
 
 - name: Install InfluxDB (zypper)
   zypper:
-    name: "/opt/influxdb-{{ influxdb_version }}.x86_64.rpm"
+    name: "{{ influxdb_mirror }}/influxdb-{{ influxdb_version }}.x86_64.rpm"
     state: present
   register: install_influxdb
   until: install_influxdb is success
-  retries: 3
+  retries: 5
   delay: 2
