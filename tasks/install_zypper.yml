@@ -9,11 +9,4 @@
   delay: 2
 
 - name: Install InfluxDB (zypper)
-  zypper:
-    name: "/opt/influxdb-{{ influxdb_version }}.x86_64.rpm"
-    state: present
-  register: install_influxdb
-  until: install_influxdb is success
-  retries: 5
-  delay: 2
-  disable_gpg_check: yes
+  command: "/usr/bin/zypper --quiet --non-interactive --xmlout --no-gpg-check install --type package --auto-agree-with-licenses --no-recommends -- /opt/influxdb-{{ influxdb_version }}.x86_64.rpm"
