@@ -14,3 +14,6 @@ influxdb_dir: /var/opt/influxdb
 
 # Influxdb Relay vars
 influxdb_relay_port: 9096
+
+# Systemd directory
+systemd_dir: /etc/systemd/system

@@ -1,0 +1,14 @@
+---
+- name: Place the systemd service
+  template:
+    src: influxdb.service.j2
+    dest: "{{ systemd_dir }}/influxdb.service"
+  notify:
+    - Restart influxdb
+
+- name: Create /etc/default file to provide extra systemd service args
+  template:
+    src: influxdb.j2
+    dest: "{{ influxdb_dir }}/influxdb"
+  notify:
+    - Restart influxdb

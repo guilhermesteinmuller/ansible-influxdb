@@ -14,4 +14,7 @@
     group: root
     mode: 0775
 
+- include: configure_opensuse.yml
+  when: "ansible_os_family == 'Suse'"
+
 - meta: flush_handlers
